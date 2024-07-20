@@ -1,65 +1,65 @@
 import streamlit as st
-import requests
 from ultralytics import YOLO
 from PIL import Image
-import matplotlib.pyplot as plt
-import io
+import os
 
 # Streamlit app title
 st.title("YOLO Model Deployment")
 
-# GitHub repository URL for the model
-github_repo_url = "https://github.com/MISSAOUI1920/yolo-app/blob/main/model/best%20(2).pt"  # Replace with your GitHub URL
+# Define the model directory and path
+model_directory = "model"
+model_filename = "best.pt"  # Adjust if needed
+model_path = os.path.join(model_directory, model_filename)
 
-# Download the model file from GitHub
-response = requests.get(github_repo_url)
-if response.status_code == 200:
-    model_bytes = io.BytesIO(response.content)
+# Check if the model file exists
+if not os.path.isfile(model_path):
+    st.error(f"Model file not found: {model_path}")
 else:
-    st.error("Failed to download model file.")
-    st.stop()
+    # Load the model
+    model = YOLO(model_path)
 
-# Load the model
-model = YOLO(model_bytes)
+    # File uploader
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-# File uploader
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        # Load the image
+        image = Image.open(uploaded_file)
+        st.image(image, caption='Uploaded Image', use_column_width=True)
+        st.write("")
+        st.write("Classifying...")
 
-if uploaded_file is not None:
-    # Load the image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
-    st.write("")
-    st.write("Classifying...")
+        # Perform inference
+        results = model([image])  # return a list of Results objects
 
-    # Perform inference
-    results = model([image])  # return a list of Results objects
+        # Process results list
+        for result in results:
+            # Display bounding boxes
+            if result.boxes:
+                st.write("Bounding Boxes:")
+                st.write(result.boxes)
 
-    # Process results list
-    for result in results:
-        boxes = result.boxes  # Boxes object for bounding box outputs
-        masks = result.masks  # Masks object for segmentation masks outputs
-        keypoints = result.keypoints  # Keypoints object for pose outputs
-        probs = result.probs  # Probs object for classification outputs
-        obb = result.obb  # Oriented boxes object for OBB outputs
+            # Display segmentation masks
+            if result.masks:
+                st.write("Segmentation Masks:")
+                st.write(result.masks)
 
-        # Save the result to a file
-        result_img = result.save()  # Save result to a file-like object
-        st.image(result_img, caption='Classified Image', use_column_width=True)
+            # Display keypoints
+            if result.keypoints:
+                st.write("Keypoints:")
+                st.write(result.keypoints)
 
-        # Optional: Display individual components if needed
-        if boxes is not None:
-            st.write("Bounding Boxes:")
-            st.write(boxes)
-        if masks is not None:
-            st.write("Segmentation Masks:")
-            st.write(masks)
-        if keypoints is not None:
-            st.write("Keypoints:")
-            st.write(keypoints)
-        if probs is not None:
-            st.write("Classification Probabilities:")
-            st.write(probs)
-        if obb is not None:
-            st.write("Oriented Bounding Boxes:")
-            st.write(obb)
+            # Display classification probabilities
+            if result.probs:
+                st.write("Classification Probabilities:")
+                st.write(result.probs)
+
+            # Display oriented bounding boxes
+            if result.obb:
+                st.write("Oriented Bounding Boxes:")
+                st.write(result.obb)
+
+            # Save and display the result image
+            result_image_path = os.path.join("result.jpg")  # Specify the result image filename
+            result.save(result_image_path)
+            result_image = Image.open(result_image_path)
+            st.image(result_image, caption='Classified Image', use_column_width=True)
