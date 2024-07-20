@@ -3,3 +3,4 @@ ultralytics<8.0.20
 Pillow==9.2.0
 matplotlib==3.5.2
 opencv-python-headless==4.5.5.64  # To avoid unnecessary GUI dependencies
+huggingface_hub
