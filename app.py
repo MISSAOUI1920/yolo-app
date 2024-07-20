@@ -2,15 +2,16 @@ import streamlit as st
 from ultralytics import YOLO
 from PIL import Image
 import matplotlib.pyplot as plt
+from huggingface_hub import hf_hub_download
 
 # Streamlit app title
 st.title("YOLO Model Deployment")
 
 
-model_path = "model/best (2).pt"
-
-# Load the model
-model = YOLO(model_path)
+# Download the model file from Hugging Face
+repo_id = "MISSAOUI/tomato-strawberry_yolov8_model"
+filename = "best (2).pt"  # This should be the filename of the model in the repository
+model_path = hf_hub_download(repo_id, filename)
 
 # File uploader
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
