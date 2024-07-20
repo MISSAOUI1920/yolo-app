@@ -1,5 +1,5 @@
 streamlit
 huggingface_hub
 ultralytics
-PIL
+Pillow
 matplotlib.pyplot
