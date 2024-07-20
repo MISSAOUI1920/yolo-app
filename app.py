@@ -1,18 +1,26 @@
 import streamlit as st
+import requests
 from ultralytics import YOLO
 from PIL import Image
 import matplotlib.pyplot as plt
-from huggingface_hub import hf_hub_download
+import io
 
 # Streamlit app title
 st.title("YOLO Model Deployment")
 
+# GitHub repository URL for the model
+github_repo_url = "https://github.com/MISSAOUI1920/yolo-app/blob/main/model/best%20(2).pt"  # Replace with your GitHub URL
 
-# Download the model file from Hugging Face
-repo_id = "MISSAOUI/tomato-strawberry_yolov8_model"
-filename = "best (2).pt"  # This should be the filename of the model in the repository
-model_path = hf_hub_download(repo_id, filename)
-model = YOLO(model_path)
+# Download the model file from GitHub
+response = requests.get(github_repo_url)
+if response.status_code == 200:
+    model_bytes = io.BytesIO(response.content)
+else:
+    st.error("Failed to download model file.")
+    st.stop()
+
+# Load the model
+model = YOLO(model_bytes)
 
 # File uploader
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
@@ -36,11 +44,8 @@ if uploaded_file is not None:
         obb = result.obb  # Oriented boxes object for OBB outputs
 
         # Save the result to a file
-        result.save("result.jpg")  # Specify filename directly
-
-        # Load and display the saved image
-        img = Image.open("result.jpg")
-        st.image(img, caption='Classified Image', use_column_width=True)
+        result_img = result.save()  # Save result to a file-like object
+        st.image(result_img, caption='Classified Image', use_column_width=True)
 
         # Optional: Display individual components if needed
         if boxes is not None:
