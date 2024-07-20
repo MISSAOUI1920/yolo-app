@@ -12,6 +12,7 @@ st.title("YOLO Model Deployment")
 repo_id = "MISSAOUI/tomato-strawberry_yolov8_model"
 filename = "best (2).pt"  # This should be the filename of the model in the repository
 model_path = hf_hub_download(repo_id, filename)
+model = YOLO(model_path)
 
 # File uploader
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
