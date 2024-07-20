@@ -7,10 +7,8 @@ import matplotlib.pyplot as plt
 # Streamlit app title
 st.title("YOLO Model Deployment")
 
-# Download the model file from Hugging Face
-repo_id = "MISSAOUI/tomato-strawberry_yolov8_model"
-filename = "best (2).pt"  # This should be the filename of the model in the repository
-model_path = hf_hub_download(repo_id, filename)
+
+model_path = "./best (2).pt"
 
 # Load the model
 model = YOLO(model_path)
