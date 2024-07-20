@@ -1,0 +1,5 @@
+streamlit
+huggingface_hub
+ultralytics
+PIL
+matplotlib.pyplot
