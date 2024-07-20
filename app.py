@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 st.title("YOLO Model Deployment")
 
 
-model_path = "./best (2).pt"
+model_path = "model/best (2).pt"
 
 # Load the model
 model = YOLO(model_path)
