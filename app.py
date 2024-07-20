@@ -1,12 +1,13 @@
 import streamlit as st
+from pathlib import Path
 from ultralytics import YOLO
 from PIL import Image
 
 # Streamlit app title
 st.title("YOLO Model Deployment")
 
-# Set the path to the model in the 'model' folder
-model_path = "model/best.pt"  # Adjust the filename if necessary
+# Define the model path using pathlib
+model_path = Path("model/best (2).pt")
 
 # Load the model
 model = YOLO(model_path)
@@ -26,33 +27,33 @@ if uploaded_file is not None:
 
     # Process results list
     for result in results:
-        # Display bounding boxes
-        if result.boxes:
-            st.write("Bounding Boxes:")
-            st.write(result.boxes)
-        
-        # Display segmentation masks
-        if result.masks:
-            st.write("Segmentation Masks:")
-            st.write(result.masks)
-        
-        # Display keypoints
-        if result.keypoints:
-            st.write("Keypoints:")
-            st.write(result.keypoints)
-        
-        # Display classification probabilities
-        if result.probs:
-            st.write("Classification Probabilities:")
-            st.write(result.probs)
-        
-        # Display oriented bounding boxes
-        if result.obb:
-            st.write("Oriented Bounding Boxes:")
-            st.write(result.obb)
+        boxes = result.boxes  # Boxes object for bounding box outputs
+        masks = result.masks  # Masks object for segmentation masks outputs
+        keypoints = result.keypoints  # Keypoints object for pose outputs
+        probs = result.probs  # Probs object for classification outputs
+        obb = result.obb  # Oriented boxes object for OBB outputs
 
-        # Save and display the result image
-        result_image_path = "result.jpg"  # Specify the result image filename
-        result.save(result_image_path)
-        result_image = Image.open(result_image_path)
-        st.image(result_image, caption='Classified Image', use_column_width=True)
+        # Save the result to a file
+        result_image_path = Path("result.jpg")
+        result.save(result_image_path)  # Specify filename directly
+
+        # Load and display the saved image
+        img = Image.open(result_image_path)
+        st.image(img, caption='Classified Image', use_column_width=True)
+
+        # Optional: Display individual components if needed
+        if boxes is not None:
+            st.write("Bounding Boxes:")
+            st.write(boxes)
+        if masks is not None:
+            st.write("Segmentation Masks:")
+            st.write(masks)
+        if keypoints is not None:
+            st.write("Keypoints:")
+            st.write(keypoints)
+        if probs is not None:
+            st.write("Classification Probabilities:")
+            st.write(probs)
+        if obb is not None:
+            st.write("Oriented Bounding Boxes:")
+            st.write(obb)
