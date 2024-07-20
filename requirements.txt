@@ -2,4 +2,4 @@ streamlit==1.22.0
 ultralytics<8.0.20
 Pillow==9.2.0
 opencv-python-headless==4.5.5.64  # To avoid unnecessary GUI dependencies
-
+pathlib
